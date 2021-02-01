@@ -3,7 +3,7 @@
 // Have steamguard code = "" to start
 // Fill in the steamguard code after receiving it
 // After successfully logging in, return steamguard code to ""
-var config = {};
+var config: any = {};
 
 config.steam_name = "Mithvs Bot";
 config.steam_user = "maurymagalhaes";

@@ -1,10 +1,10 @@
 import express, { response } from "express";
 
+import routes from "./routes";
+
 const app = express();
 
-app.get("/", () => {
-  return response.json({ message: "Sim" });
-});
+app.use(routes);
 
 app.listen(3333, () => {
   console.log("Servidor está online na porta 3333.");
