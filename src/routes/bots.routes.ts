@@ -35,6 +35,38 @@ botsRouter.post("/start", (request, response) => {
         return response.json({ message: err });
     }
 });
+
+botsRouter.post("/invite", (request, response) => {
+    try {
+        const { steamID } = request.body;
+        bots[0].inviteToDotaLobby(steamID);
+        return response.json({ message: "Bot criou o lobby com sucesso." });
+    } catch (err) {
+        return response.json({ message: err });
+    }
+});
+
+botsRouter.post("/match", (request, response) => {
+    try {
+        const { matchID } = request.body;
+        const matchData = bots[0].matchDataLobby(matchID);
+        console.log(matchID);
+        console.log(matchData);
+        return response.json({ message: matchData });
+    } catch (err) {
+        return response.json({ message: err });
+    }
+});
+
+botsRouter.post("/startgame", (request, response) => {
+    try {
+        bots[0].startGameLobby();
+        return response.json({ message: "Bot começou a partida com sucesso." });
+    } catch (err) {
+        return response.json({ message: err });
+    }
+});
+
 botsRouter.post("/leave", (request, response) => {
     try {
         bots[0].leaveDotaLobby();

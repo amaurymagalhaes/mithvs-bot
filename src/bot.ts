@@ -67,20 +67,17 @@ class Bot {
         }
     }
 
-    startDotaLobby() {
-        Dota2.launchPracticeLobby();
-    }
-
     exitDota() {
         Dota2.exit();
+        this.onSteamLogOff;
     }
 
     createDotaLobby() {
         Dota2.createPracticeLobby(
             {
                 game_name: "Mithvs Game",
-                server_region: dota2.ServerRegion.PERFECTWORLDTELECOM,
-                game_mode: dota2.schema.DOTA_GameMode.DOTA_GAMEMODE_AR,
+                server_region: dota2.ServerRegion.Unspecified,
+                game_mode: dota2.schema.DOTA_GameMode.DOTA_GAMEMODE_ALL_DRAFT,
                 series_type: 2,
                 game_version: 1,
                 allow_cheats: false,
@@ -95,12 +92,29 @@ class Bot {
                 console.log(JSON.stringify(body));
             }
         );
+        Dota2.joinPracticeLobbyTeam(2, 4);
     }
 
     leaveDotaLobby() {
         Dota2.leavePracticeLobby(function (err: any, body: any) {
             console.log(JSON.stringify(body));
         });
+    }
+
+    matchDataLobby(id: any) {
+        Dota2.requestMatchDetails(id);
+        Dota2.on("matchDetailsData", function (matchId: any, matchData: any) {
+            return matchData;
+        });
+    }
+
+    inviteToDotaLobby(id: any) {
+        Dota2.inviteToLobby(id);
+    }
+    startGameLobby() {
+        Dota2.launchPracticeLobby();
+        Dota2.abandonCurrentGame();
+        setTimeout(function () {}, 5000);
     }
 
     onSteamLogOn(logonResp: any) {
@@ -114,13 +128,6 @@ class Bot {
 
                 /* CHAT */
                 // Event based
-                Dota2.joinChat("rj");
-                setTimeout(function () {
-                    Dota2.sendMessage("wowoeagnaeigniaeg", "rj");
-                }, 5000);
-                setTimeout(function () {
-                    Dota2.leaveChat("rj");
-                }, 10000);
             });
             Dota2.on("unready", function onUnready() {
                 console.log("Node-dota2 unready.");
@@ -131,6 +138,7 @@ class Bot {
                     // util.log([channel, personaName, message].join(", "));
                 }
             );
+
             Dota2.on(
                 "guildInvite",
                 function (guildId: any, guildName: any, inviter: any) {
