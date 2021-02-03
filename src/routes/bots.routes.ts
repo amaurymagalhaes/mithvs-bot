@@ -39,8 +39,9 @@ botsRouter.post("/start", (request, response) => {
 botsRouter.post("/invite", (request, response) => {
     try {
         const { steamID } = request.body;
-        bots[0].inviteToDotaLobby(steamID);
-        return response.json({ message: "Bot criou o lobby com sucesso." });
+        const matchData = bots[0].inviteToDotaLobby(steamID);
+
+        return response.json({ message: matchData });
     } catch (err) {
         return response.json({ message: err });
     }
@@ -49,10 +50,10 @@ botsRouter.post("/invite", (request, response) => {
 botsRouter.post("/match", (request, response) => {
     try {
         const { matchID } = request.body;
-        const matchData = bots[0].matchDataLobby(matchID);
-        console.log(matchID);
+        let matchData = bots[0].matchDataLobby(matchID);
+
         console.log(matchData);
-        return response.json({ message: matchData });
+        return response.json(matchData);
     } catch (err) {
         return response.json({ message: err });
     }

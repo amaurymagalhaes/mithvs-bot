@@ -101,11 +101,9 @@ class Bot {
         });
     }
 
-    matchDataLobby(id: any) {
-        Dota2.requestMatchDetails(id);
-        Dota2.on("matchDetailsData", function (matchId: any, matchData: any) {
-            return matchData;
-        });
+    matchDataLobby(lobby: any) {
+        let matchData = Dota2.practiceLobbyUpdate(lobby);
+        return matchData;
     }
 
     inviteToDotaLobby(id: any) {
