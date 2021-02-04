@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Bot from "../bot";
+import stringify from "json-stringify-safe";
 
 const botsRouter = Router();
 
@@ -47,15 +48,13 @@ botsRouter.post("/invite", (request, response) => {
     }
 });
 
-botsRouter.post("/match", (request, response) => {
+botsRouter.post("/match", async (request, response) => {
     try {
         const { matchID } = request.body;
-        let matchData = bots[0].matchDataLobby(matchID);
-
-        console.log(matchData);
+        const matchData = await bots[0].matchDataLobby(matchID);
         return response.json(matchData);
     } catch (err) {
-        return response.json({ message: err });
+        return response.json({ message: "Um erro ocorreu" });
     }
 });
 

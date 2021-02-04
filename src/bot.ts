@@ -6,9 +6,10 @@ var steam = require("steam"),
     dota2 = require("dota2"),
     steamClient = new steam.SteamClient(),
     steamUser = new steam.SteamUser(steamClient),
-    steamFriends = new steam.SteamFriends(steamClient),
-    Dota2 = new dota2.Dota2Client(steamClient, true);
+    steamFriends = new steam.SteamFriends(steamClient);
+let Dota2 = new dota2.Dota2Client(steamClient, true);
 var config: any = require("./config");
+var matchData: any;
 
 class Bot {
     logOnDetails: any = {
@@ -31,6 +32,7 @@ class Bot {
         steamClient.on("loggedOff", this.onSteamLogOff);
         steamClient.on("error", this.onSteamError);
         steamClient.on("servers", this.onSteamServers);
+
         steamUser.on(
             "updateMachineAuth",
             function (sentry: any, callback: any) {
@@ -92,7 +94,16 @@ class Bot {
                 console.log(JSON.stringify(body));
             }
         );
+        var lobbyChannel = "";
         Dota2.joinPracticeLobbyTeam(2, 4);
+        Dota2.on("practiceLobbyUpdate", function (lobby: any) {
+            Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
+            lobbyChannel = "Lobby_" + lobby.lobby_id;
+            Dota2.joinChat(
+                lobbyChannel,
+                dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby
+            );
+        });
     }
 
     leaveDotaLobby() {
@@ -101,10 +112,15 @@ class Bot {
         });
     }
 
-    matchDataLobby(lobby: any) {
-        let matchData = Dota2.practiceLobbyUpdate(lobby);
-        return matchData;
-    }
+    public matchDataLobby = (matchID: any) => {
+        return new Promise((resolve) => {
+            Dota2.requestMatchDetails(matchID, function (err: any, body: any) {
+                if (err) throw err;
+                matchData = JSON.parse(JSON.stringify(body));
+                resolve(matchData);
+            });
+        });
+    };
 
     inviteToDotaLobby(id: any) {
         Dota2.inviteToLobby(id);
@@ -147,6 +163,12 @@ class Bot {
                 util.log("UNHANDLED MESSAGE " + dota2._getMessageName(kMsg));
             });
             // setTimeout(function(){ Dota2.exit(); }, 5000);
+            Dota2.on(
+                "matchDetailsData",
+                function (matchId: any, matchData: any) {
+                    //console.log(JSON.stringify(matchData, null, 2));
+                }
+            );
         }
     }
     onSteamServers(servers: any) {
